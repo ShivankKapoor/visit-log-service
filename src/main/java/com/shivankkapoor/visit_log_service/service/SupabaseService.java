@@ -1,12 +1,13 @@
 package com.shivankkapoor.visit_log_service.service;
 
+import com.shivankkapoor.visit_log_service.model.VisitRecord;
+import com.shivankkapoor.visit_log_service.model.VisitPayload;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import com.shivankkapoor.visit_log_service.model.VisitPayload;
 
 @Service
 public class SupabaseService {
@@ -24,21 +25,20 @@ public class SupabaseService {
     }
 
     public Mono<Void> storeVisit(String ipAddress, VisitPayload payload) {
+        VisitRecord visitRecord = new VisitRecord(
+            ipAddress,
+            payload.getPageVisited(),
+            payload.getDeviceInfo()
+        );
+
         return webClient.post()
                 .uri(supabaseUrl + "/rest/v1/page_visits")
                 .header("apikey", supabaseKey)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + supabaseKey)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header("Prefer", "return=minimal")
-                .bodyValue(new VisitRecord(ipAddress, payload))
+                .bodyValue(visitRecord)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
-
-    private record VisitRecord(String ipAddress, VisitPayload payload) {
-        public String ip_address() { return ipAddress; }
-        public String page_visited() { return payload.getPageVisited(); }
-        public String device_info() { return payload.getDeviceInfo(); }
-    }
 }
-
