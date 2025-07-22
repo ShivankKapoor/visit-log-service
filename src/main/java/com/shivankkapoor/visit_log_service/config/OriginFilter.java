@@ -10,8 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.shivankkapoor.visit_log_service.service.ClientIpExtractorService;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,6 +31,9 @@ public class OriginFilter implements Filter {
     @Value("${ALLOWED_HOSTS:}")
     private String allowedHosts;
 
+    @Autowired
+    private ClientIpExtractorService ipExtractorService;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -36,10 +42,11 @@ public class OriginFilter implements Filter {
         HttpServletResponse httpResp = (HttpServletResponse) response;
 
         String origin = httpReq.getHeader("Origin");
+        String ip = ipExtractorService.extractClientIp(httpReq);
 
         if (!devMode) {
             if (origin == null || origin.isEmpty()) {
-                logger.warn("Blocked request with missing Origin header from IP: {}", request.getRemoteAddr());
+                logger.warn("Blocked request with missing Origin header from IP: {}", ip);
                 httpResp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 httpResp.getWriter().write("Forbidden: Missing Origin header");
                 return;

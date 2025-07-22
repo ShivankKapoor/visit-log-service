@@ -26,10 +26,9 @@ public class SupabaseService {
 
     public Mono<Void> storeVisit(String ipAddress, VisitPayload payload) {
         VisitRecord visitRecord = new VisitRecord(
-            ipAddress,
-            payload.getPageVisited(),
-            payload.getDeviceInfo()
-        );
+                ipAddress,
+                payload.getPageVisited(),
+                payload.getDeviceInfo());
 
         return webClient.post()
                 .uri(supabaseUrl + "/rest/v1/page_visits")

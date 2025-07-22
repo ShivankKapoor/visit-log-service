@@ -16,6 +16,7 @@ public class VisitPayload {
     public String getPageVisited() {
         return pageVisited;
     }
+
     public void setPageVisited(String pageVisited) {
         this.pageVisited = pageVisited;
     }
@@ -23,6 +24,7 @@ public class VisitPayload {
     public String getDeviceInfo() {
         return deviceInfo;
     }
+
     public void setDeviceInfo(String deviceInfo) {
         this.deviceInfo = deviceInfo;
     }
@@ -30,6 +32,7 @@ public class VisitPayload {
     public String getUserAgent() {
         return userAgent;
     }
+
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
@@ -37,6 +40,7 @@ public class VisitPayload {
     public String getReferrer() {
         return referrer;
     }
+
     public void setReferrer(String referrer) {
         this.referrer = referrer;
     }

@@ -21,7 +21,8 @@ public class VisitController {
     private ClientIpExtractorService ipExtractorService;
 
     @PostMapping("track")
-    public ResponseEntity<ApiResponse> trackVisit(@Valid @RequestBody VisitPayload payload, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> trackVisit(@Valid @RequestBody VisitPayload payload,
+            HttpServletRequest request) {
         String clientIp = ipExtractorService.extractClientIp(request);
         supabaseService.storeVisit(clientIp, payload)
                 .subscribe();

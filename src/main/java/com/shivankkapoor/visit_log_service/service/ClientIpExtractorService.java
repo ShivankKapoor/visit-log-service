@@ -12,9 +12,9 @@ public class ClientIpExtractorService {
 
     public String extractClientIp(HttpServletRequest request) {
         String[] headerNames = {
-            "x-forwarded-for",
-            "cf-connecting-ip",
-            "true-client-ip"
+                "x-forwarded-for",
+                "cf-connecting-ip",
+                "true-client-ip"
         };
 
         for (String header : headerNames) {
