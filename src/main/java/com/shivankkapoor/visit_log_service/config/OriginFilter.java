@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import com.shivankkapoor.visit_log_service.service.ClientIpExtractorService;
 
@@ -19,11 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class OriginFilter implements Filter {
 
-    private static final List<String> FILTERED_ENDPOINTS = Arrays.asList(
-            "/track");
-
+    private static final List<String> FILTERED_ENDPOINTS = Arrays.asList("/track");
     private static final Logger logger = LoggerFactory.getLogger(OriginFilter.class);
 
     @Value("${DEV_MODE:false}")
@@ -42,6 +43,7 @@ public class OriginFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
         String path = httpReq.getRequestURI();
+        String method = httpReq.getMethod();
 
         boolean shouldFilter = FILTERED_ENDPOINTS.stream()
                 .anyMatch(endpoint -> path != null && path.startsWith(endpoint));
@@ -71,6 +73,29 @@ public class OriginFilter implements Filter {
             }
         }
 
+        if (origin != null) {
+            httpResp.setHeader("Access-Control-Allow-Origin", origin);
+            httpResp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+            httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            httpResp.setHeader("Access-Control-Allow-Credentials", "true");
+            httpResp.setHeader("Access-Control-Max-Age", "3600");
+
+            if (devMode) {
+                logger.debug("Set CORS headers for origin '{}' (DEV MODE)", origin);
+            } else {
+                logger.debug("Set CORS headers for allowed origin '{}'", origin);
+            }
+        }
+
+        // Handle OPTIONS preflight requests
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            logger.info("Handling OPTIONS preflight request from origin: '{}', IP: {}", origin, ip);
+            httpResp.setStatus(HttpServletResponse.SC_OK);
+            return; // Don't continue to controller for OPTIONS
+        }
+
+        // Continue with the actual request
+        logger.debug("Processing {} request to {} from origin: '{}', IP: {}", method, path, origin, ip);
         chain.doFilter(request, response);
     }
 }
