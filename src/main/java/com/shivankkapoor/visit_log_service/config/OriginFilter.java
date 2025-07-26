@@ -7,13 +7,11 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import com.shivankkapoor.visit_log_service.service.ClientIpExtractorService;
 
 import java.io.IOException;
@@ -22,6 +20,9 @@ import java.util.List;
 
 @Component
 public class OriginFilter implements Filter {
+
+    private static final List<String> FILTERED_ENDPOINTS = Arrays.asList(
+            "/track");
 
     private static final Logger logger = LoggerFactory.getLogger(OriginFilter.class);
 
@@ -40,10 +41,12 @@ public class OriginFilter implements Filter {
 
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
-
         String path = httpReq.getRequestURI();
 
-        if (path != null && path.startsWith("/health")) {
+        boolean shouldFilter = FILTERED_ENDPOINTS.stream()
+                .anyMatch(endpoint -> path != null && path.startsWith(endpoint));
+
+        if (!shouldFilter) {
             chain.doFilter(request, response);
             return;
         }
