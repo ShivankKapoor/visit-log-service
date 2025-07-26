@@ -41,6 +41,13 @@ public class OriginFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
 
+        String path = httpReq.getRequestURI();
+
+        if (path != null && path.startsWith("/health")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String origin = httpReq.getHeader("Origin");
         String ip = ipExtractorService.extractClientIp(httpReq);
 
