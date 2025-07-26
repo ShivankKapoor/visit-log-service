@@ -28,4 +28,9 @@ public class VisitController {
                 .subscribe();
         return ResponseEntity.ok(new ApiResponse(true, "Visit recorded successfully"));
     }
+
+    @GetMapping("/")
+    public String home() {
+        return "Welcome to the Visit Service!";
+    }
 }
