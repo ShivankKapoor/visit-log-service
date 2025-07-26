@@ -40,4 +40,16 @@ public class SupabaseService {
                 .retrieve()
                 .bodyToMono(Void.class);
     }
+
+    public Mono<Boolean> checkStatus() {
+        return webClient.get()
+                .uri(supabaseUrl + "/health")
+                .header("apikey", supabaseKey)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + supabaseKey)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(response -> true)
+                .onErrorReturn(false);
+    }
+
 }
