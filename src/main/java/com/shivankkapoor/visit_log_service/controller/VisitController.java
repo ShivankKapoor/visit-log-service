@@ -28,9 +28,4 @@ public class VisitController {
                 .subscribe();
         return ResponseEntity.ok(new ApiResponse(true, "Visit recorded successfully"));
     }
-
-    @GetMapping("health")
-    public ResponseEntity<ApiResponse> healthCheck() {
-        return ResponseEntity.ok(new ApiResponse(true, "Service is healthy"));
-    }
 }
