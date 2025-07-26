@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
                         <div class="status-code">404</div>
                         <h1>Page Not Found</h1>
                         <img src="/Leo.png" alt="Leo - My dog" class="dog-image">
-                        <p>We couldn't find that page</p>
+                        <p>We couldn't fetch that page</p>
                         <a href="/" class="home-link">Go Home</a>
                     </div>
                 </body>
