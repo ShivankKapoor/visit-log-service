@@ -12,6 +12,9 @@ public class DiscordMessageDTO {
 
     @Override
     public String toString() {
+        if (page.equals("/")) {
+           this.page = ("/home");
+        }
         return String.format("🌐 Visitor from %s (%s) viewed the page: %s", location, ip, page);
     }
 }
