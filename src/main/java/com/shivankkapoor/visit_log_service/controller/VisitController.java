@@ -1,8 +1,11 @@
 package com.shivankkapoor.visit_log_service.controller;
 
+import com.shivankkapoor.visit_log_service.dto.DiscordMessageDTO;
 import com.shivankkapoor.visit_log_service.model.ApiResponse;
 import com.shivankkapoor.visit_log_service.model.VisitPayload;
 import com.shivankkapoor.visit_log_service.service.ClientIpExtractorService;
+import com.shivankkapoor.visit_log_service.service.DiscordMessagingService;
+import com.shivankkapoor.visit_log_service.service.IpLookupService;
 import com.shivankkapoor.visit_log_service.service.SupabaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -23,6 +26,12 @@ public class VisitController {
     @Autowired
     private ClientIpExtractorService ipExtractorService;
 
+    @Autowired
+    private DiscordMessagingService discordMessagingService;
+
+    @Autowired
+    private IpLookupService ipLookupService;
+
     @GetMapping("/")
     public String home() {
         return "Welcome to the Visit Service!";
@@ -34,6 +43,9 @@ public class VisitController {
         String clientIp = ipExtractorService.extractClientIp(request);
         supabaseService.storeVisit(clientIp, payload)
                 .subscribe();
+        DiscordMessageDTO discordMessage = new DiscordMessageDTO(clientIp, payload.getPageVisited(),
+                ipLookupService.getLocation(clientIp));
+        discordMessagingService.sendMessage(discordMessage.toString());
         return ResponseEntity.ok(new ApiResponse(true, "Visit recorded successfully"));
     }
 
