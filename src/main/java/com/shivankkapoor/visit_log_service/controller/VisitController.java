@@ -49,9 +49,9 @@ public class VisitController {
         return ResponseEntity.ok(new ApiResponse(true, "Visit recorded successfully"));
     }
 
-    @GetMapping("/Leo.png")
+    @GetMapping("/Leo.webp")
     public ResponseEntity<Resource> getLeoImage() throws IOException {
-        Resource resource = new ClassPathResource("static/images/Leo.png");
+        Resource resource = new ClassPathResource("static/images/Leo.webp");
         return ResponseEntity.ok()
                 .header("Content-Type", "image/png")
                 .body(resource);
