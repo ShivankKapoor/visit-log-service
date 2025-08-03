@@ -2,6 +2,9 @@ package com.shivankkapoor.visit_log_service.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,11 @@ public class HealthController {
                     combined.putAll(tuple.getT1()); // uptime map
                     combined.put("supabaseStatus", tuple.getT2() ? "UP" : "DOWN");
                     combined.put("success", tuple.getT2()); // or combine results as needed
+                    
+                    // Add current time in Chicago
+                    ZoneId chicagoZone = ZoneId.of("America/Chicago");
+                    ZonedDateTime chicagoTime = ZonedDateTime.now(chicagoZone);
+                    combined.put("localTime", chicagoTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 
                     return ResponseEntity.ok(combined);
                 });
